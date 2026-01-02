@@ -1,3 +1,52 @@
+/**
+ * Billing service: handles usage, credits, and subscription management
+ * Features: upgrade/downgrade, billing history, estimate bill, pause/resume
+ */
+/**
+ * Upgrade or downgrade a subscription tier
+ */
+export async function changeSubscriptionTier(subscriptionId: string, newTierId: string): Promise<Subscription | null> {
+  const tier = getTierById(newTierId);
+  if (!tier) throw new Error(`Invalid tier: ${newTierId}`);
+  return subscriptionRepository.update(subscriptionId, {
+    tierId: newTierId,
+  });
+}
+
+/**
+ * Retrieve billing history for an organization (mocked)
+ */
+export async function getBillingHistory(orgId: string): Promise<UsageRecord[]> {
+  // TODO: Replace with real DB query
+  return [
+    await calculateUsage(orgId),
+    { ...await calculateUsage(orgId), billingPeriod: '2025-12' },
+    { ...await calculateUsage(orgId), billingPeriod: '2025-11' },
+  ];
+}
+
+/**
+ * Estimate next month's bill based on current usage
+ */
+export async function estimateNextBill(orgId: string): Promise<{ estimatedTotal: number; details: UsageRecord }> {
+  const usage = await calculateUsage(orgId);
+  // For demo, just return current usage as estimate
+  return { estimatedTotal: usage.totalCost, details: usage };
+}
+
+/**
+ * Pause a subscription (sets status to 'paused')
+ */
+export async function pauseSubscription(subscriptionId: string): Promise<Subscription | null> {
+  return subscriptionRepository.update(subscriptionId, { status: 'paused' as any });
+}
+
+/**
+ * Resume a paused subscription (sets status to 'active')
+ */
+export async function resumeSubscription(subscriptionId: string): Promise<Subscription | null> {
+  return subscriptionRepository.update(subscriptionId, { status: 'active' });
+}
 // Billing service: handles usage, credits, and subscription management
 import * as subscriptionRepository from '../repositories/subscription.repository';
 
@@ -65,6 +114,9 @@ export async function createSubscription(data: {
   return subscriptionRepository.create(subscription);
 }
 
+/**
+ * Cancel a subscription (sets status to 'cancelled' and sets endDate)
+ */
 export async function cancelSubscription(subscriptionId: string): Promise<Subscription | null> {
   return subscriptionRepository.update(subscriptionId, {
     status: 'cancelled',

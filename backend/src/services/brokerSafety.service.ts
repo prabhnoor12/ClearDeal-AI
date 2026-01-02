@@ -1,7 +1,10 @@
-// Broker safety service: handles broker risk, safety status, and activity logging
+
+// Broker safety service: handles broker risk, safety status, activity logging, trends, and manual flagging
+
 import { BrokerSafetyStatus, BrokerAnalytics, Broker } from '../types/broker.types';
 import * as organizationRepository from '../repositories/organization.repository';
 
+// --- Types ---
 interface BrokerActivity {
   brokerId: string;
   orgId: string;
@@ -10,8 +13,68 @@ interface BrokerActivity {
   metadata?: Record<string, any>;
 }
 
+// --- In-memory stores ---
 const activityLog: BrokerActivity[] = [];
 const safetyCache = new Map<string, BrokerSafetyStatus>();
+const flaggedBrokers = new Set<string>();
+
+// --- Safety Status ---
+// --- Analytics ---
+// --- Activity Logging ---
+// --- Alerts ---
+// --- Manual Flagging ---
+/**
+ * Manually flag a broker as risky
+ */
+export function flagBroker(brokerId: string): void {
+  flaggedBrokers.add(brokerId);
+}
+
+/**
+ * Remove manual flag from a broker
+ */
+export function unflagBroker(brokerId: string): void {
+  flaggedBrokers.delete(brokerId);
+}
+
+/**
+ * Get all manually flagged brokers
+ */
+export function getFlaggedBrokers(): string[] {
+  return Array.from(flaggedBrokers);
+}
+
+// --- Trends & Export ---
+
+/**
+ * Get a broker's safety trend over time (mocked)
+ */
+export async function getSafetyTrend(_orgId: string, months = 6): Promise<{ month: string; status: string; avgRiskScore: number }[]> {
+  // TODO: Replace with real DB analytics
+  const trend: { month: string; status: string; avgRiskScore: number }[] = [];
+  for (let i = months - 1; i >= 0; i--) {
+    const date = new Date();
+    date.setMonth(date.getMonth() - i);
+    const avgRiskScore = Math.floor(Math.random() * 100);
+    let status: 'safe' | 'warning' | 'critical' = 'safe';
+    if (avgRiskScore > 70) status = 'critical';
+    else if (avgRiskScore > 50) status = 'warning';
+    trend.push({ month: date.toISOString().slice(0, 7), status, avgRiskScore });
+  }
+  return trend;
+}
+
+/**
+ * Export recent broker activity as CSV
+ */
+export async function exportActivityCSV(brokerId: string, limit = 50): Promise<string> {
+  const activities = await getRecentActivity(brokerId, limit);
+  const header = 'brokerId,orgId,route,timestamp,metadata';
+  const rows = activities.map(a =>
+    `${a.brokerId},${a.orgId},${a.route},${a.timestamp.toISOString()},${JSON.stringify(a.metadata || {})}`
+  );
+  return [header, ...rows].join('\n');
+}
 
 export async function getSafetyStatus(orgId: string): Promise<BrokerSafetyStatus> {
   if (safetyCache.has(orgId)) {

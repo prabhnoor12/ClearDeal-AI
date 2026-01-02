@@ -1,1 +1,60 @@
-// Prisma schema placeholder
+// Prisma schema for Contract
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Contract {
+  id             String   @id @default(uuid())
+  title          String
+  uploadedBy     String
+  organizationId String
+  status         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  documents      Document[]
+  clauses        Clause[]
+  disclosures    Disclosure[]
+  addenda        Addendum[]
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  contract   Contract @relation(fields: [contractId], references: [id])
+  contractId String
+  type       String
+  url        String
+  uploadedAt DateTime @default(now())
+}
+
+model Clause {
+  id         String   @id @default(uuid())
+  contract   Contract @relation(fields: [contractId], references: [id])
+  contractId String
+  text       String
+  type       String
+  flagged    Boolean
+}
+
+model Disclosure {
+  id         String   @id @default(uuid())
+  contract   Contract @relation(fields: [contractId], references: [id])
+  contractId String
+  name       String
+  required   Boolean
+  provided   Boolean
+}
+
+model Addendum {
+  id         String   @id @default(uuid())
+  contract   Contract @relation(fields: [contractId], references: [id])
+  contractId String
+  name       String
+  included   Boolean
+}
+
