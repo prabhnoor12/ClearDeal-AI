@@ -1,0 +1,1 @@
+// UUID utility placeholder

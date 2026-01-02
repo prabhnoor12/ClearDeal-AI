@@ -1,0 +1,1 @@
+// Scan controller placeholder

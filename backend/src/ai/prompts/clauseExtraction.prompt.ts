@@ -1,0 +1,1 @@
+// Clause extraction prompt placeholder

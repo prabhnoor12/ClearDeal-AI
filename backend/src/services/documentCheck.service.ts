@@ -1,0 +1,1 @@
+// Document check service placeholder
