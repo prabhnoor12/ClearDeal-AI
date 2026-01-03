@@ -6,6 +6,7 @@ import { ROLES } from '../config/constants';
 
 export interface AuthPayload {
   userId: string;
+  email: string;
   role: typeof ROLES[keyof typeof ROLES];
   organizationId?: string;
 }

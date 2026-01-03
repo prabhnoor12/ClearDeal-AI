@@ -25,11 +25,6 @@ interface ChangePasswordRequest {
   newPassword: string;
 }
 
-// Extend Express Request to include authenticated user
-interface AuthenticatedRequest extends Request {
-  user?: authService.AuthPayload;
-}
-
 // ============================================================================
 // Login
 // ============================================================================
@@ -156,7 +151,7 @@ export async function register(
  * Refresh the current JWT token
  */
 export async function refreshToken(
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
@@ -197,7 +192,7 @@ export async function refreshToken(
  * Verify current token and return user info
  */
 export async function verifyToken(
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
@@ -247,7 +242,7 @@ export async function verifyToken(
  * Change the current user's password
  */
 export async function changePassword(
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
@@ -328,7 +323,7 @@ export async function logout(
  * Get current authenticated user's profile
  */
 export async function getMe(
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> {
