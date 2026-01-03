@@ -25,3 +25,9 @@ export async function findAll(): Promise<RiskScore[]> {
   // TODO: Replace with Prisma findMany
   return [];
 }
+
+export async function getScoreHistory(contractId: string): Promise<RiskScore[]> {
+  // TODO: Replace with Prisma query for historical scores
+  // Example: return prisma.riskScore.findMany({ where: { contractId }, orderBy: { calculatedAt: 'asc' } });
+  return [];
+}

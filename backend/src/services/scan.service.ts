@@ -180,14 +180,19 @@ export async function executeScan(
     const duration = Date.now() - startTime;
     findings.push(`Scan completed in ${duration}ms`);
 
-    return {
+    const result: ScanResult = {
       id: `result_${scanId}`,
       scanId,
       findings,
       score,
       completedAt: new Date().toISOString(),
-      errors: errors.length > 0 ? errors : undefined,
     };
+
+    if (errors.length > 0) {
+      result.errors = errors;
+    }
+
+    return result;
 
   } catch (err) {
     const progress = scanProgressStore.get(scanId);
